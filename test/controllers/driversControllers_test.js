@@ -27,4 +27,29 @@ describe('The drivers controllers', () => {
       });
     done();
   });
+  it('PUT to /api/drivers/:id (edit a driver)', (done) => {
+    const driver = new Driver({email: 't@t.com', driving: false});
+    driver.save()
+      .then(() => {
+        request(app)
+          .put(`/api/drivers/${driver._id}`)
+          .send({driving: true})
+          .end(() => {
+            Driver.findOne({email: 't@t.com'})
+              .then(driver => {
+                assert(driver.driving === true);
+                done();
+              })
+              .catch(err => {
+                throw err;
+              });
+          });
+      })
+      .catch(err => {
+        throw err;
+      });
+  });
+  // it('DELETE to /api/drivers/:id (delete a driver)', done => {
+
+  // });
 });
