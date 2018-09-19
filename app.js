@@ -8,6 +8,7 @@ mongoose.Promise = global.Promise;
 // replace it with findOne*
 mongoose.set('useFindAndModify', false);
 
+// For testing purpose target different MongoDB
 if (process.env.NODE_ENV !== 'test') {
   mongoose.connect(process.env.DATABASE, { useNewUrlParser: true });
 }
@@ -18,6 +19,7 @@ console.log(`Connected to MongoDB`);
 
 // Set middleware
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 // Use routes
 app.use('/', require('./routes/drivers'));
@@ -29,6 +31,7 @@ app.use((req, res, next) => {
   next(error);
 });
 
+// Error handler
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.send({success: false, error: err.message});
@@ -36,7 +39,7 @@ app.use((err, req, res, next) => {
 
 module.exports = app;
 
-// This is here to handle all the uncaught promise rejections
+// Uncaught promise rejections
 process.on('unhandledRejection', error => {
   console.error('Uncaught Error', error);
 });

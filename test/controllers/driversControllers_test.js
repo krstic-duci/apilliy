@@ -49,7 +49,4 @@ describe('The drivers controllers', () => {
         throw err;
       });
   });
-  // it('DELETE to /api/drivers/:id (delete a driver)', done => {
-
-  // });
 });

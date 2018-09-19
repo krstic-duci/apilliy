@@ -9,11 +9,23 @@ const create = (req, res, next) => {
   res.setHeader('Content-Type', 'application/json');
   const driverProps = req.body;
 
-  Driver.save(driverProps)
-    .then(driver => {
-      res.send(driver);
+  Driver.find({email: req.body.email})
+    .then(singleDriver => {
+      if (singleDriver.length > 0) {
+        next({success: false, message: 'User Already exists'});
+      } else {
+        Driver.create(driverProps)
+          .then(driver => {
+            res.send(driver);
+          })
+          .catch(err => {
+            next(err);
+          });
+      }
     })
-    .catch(next);
+    .catch(err => {
+      next(err);
+    });
 };
 
 const edit = (req, res, next) => {
@@ -25,8 +37,10 @@ const edit = (req, res, next) => {
     .then(() => {
       Driver.findOne({ _id: driverId });
     })
-    .then(driver => res.send(driver))
-    .catch(next);
+    .then(driver => res.send({success: true, message: 'Driver updated successfully'}))
+    .catch(err => {
+      next(err);
+    });
 };
 
 const remove = (req, res, next) => {
@@ -34,8 +48,10 @@ const remove = (req, res, next) => {
   const driverId = req.params.id;
 
   Driver.findOneAndRemove({ _id: driverId })
-    .then(driver => res.status(204).send(driver))
-    .catch(next);
+    .then(driver => res.send({success: true, message: 'Driver deleted successfully'}))
+    .catch(err => {
+      next(err);
+    });
 };
 
 module.exports = {
